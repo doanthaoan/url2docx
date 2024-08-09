@@ -12,7 +12,7 @@ class ExtractFromList extends Command
      *
      * @var string
      */
-    protected $signature = 'url:list {url}';
+    protected $signature = 'url:list {url} {filename}';
 
     /**
      * The console command description.
@@ -52,8 +52,11 @@ class ExtractFromList extends Command
             $xpath = new \DOMXPath($doc);
 
             // Find first div with with class="bbWrapper"
-            $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(4);
+            // TCCT
+            // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(4);
             
+            // Truyenwikidich
+            $bbWrapperElement = $xpath->query('//ul[@style="padding: 0 1.5rem"]')->item(0);
             if ($bbWrapperElement) {
 
                 $bbWrapperHTML = $doc->saveHTML($bbWrapperElement);
@@ -77,12 +80,12 @@ class ExtractFromList extends Command
                 // echo $bbWrapperHTML;
                 
                 // var_dump($urls);
-                // $filename = 'outputList.html';
+                // $filename = $this->argument('filename');
                 // file_put_contents($filename, $bbWrapperHTML);
                 if (count($urls) > 0) {
                     for($i=0; $i < count($urls);$i++) {
                         echo $i . " - Getting content from url: " . $urls[$i];
-                        $this->call('url:docx', ['url' => $urls[$i]]);
+                        $this->call('url:docx', ['url' => $urls[$i], 'filename' => $this->argument('filename')]);
                         sleep(5);
                     }
                 }
