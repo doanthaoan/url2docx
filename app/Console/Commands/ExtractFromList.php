@@ -56,32 +56,54 @@ class ExtractFromList extends Command
             // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(4);
             
             // Truyenwikidich
-            $bbWrapperElement = $xpath->query('//ul[@style="padding: 0 1.5rem"]')->item(0);
-            if ($bbWrapperElement) {
 
-                $bbWrapperHTML = $doc->saveHTML($bbWrapperElement);
-                $tmpDom = new \DOMDocument('1.0', 'UTF-8');
-                $contentType = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-                $tmpDom->loadHTML($contentType . $bbWrapperHTML);
-                // $body = $tmpDom->documentElement->firstChild;
+            // Case 1: Wrapper use
+            // $bbWrapperElement = $xpath->query('//ul[@style="padding: 0 1.5rem"]')->item(0);
+            // if ($bbWrapperElement) {
 
-                // $tmpHtml = $tmpDom->createDocumentFragment();
-                // $tmpHtml->appendXML($bbWrapperHTML);
-                // $newNode = $tmpDom->importNode($bbWrapperElement, true);
-                // $body->appendChild($newNode);
+            //     $bbWrapperHTML = $doc->saveHTML($bbWrapperElement);
+            //     $tmpDom = new \DOMDocument('1.0', 'UTF-8');
+            //     $contentType = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+            //     $tmpDom->loadHTML($contentType . $bbWrapperHTML);
+            //     // $body = $tmpDom->documentElement->firstChild;
 
-                // echo $tmpDom->saveXML();
-                $linkList = $tmpDom->getElementsByTagName("a");
-                $urls = array();
-                foreach($linkList as $link ) {
-                    $href = $link->getAttribute('href');
-                    array_push($urls, $href);
-                }
-                // echo $bbWrapperHTML;
+            //     // $tmpHtml = $tmpDom->createDocumentFragment();
+            //     // $tmpHtml->appendXML($bbWrapperHTML);
+            //     // $newNode = $tmpDom->importNode($bbWrapperElement, true);
+            //     // $body->appendChild($newNode);
+
+            //     // echo $tmpDom->saveXML();
+            //     $linkList = $tmpDom->getElementsByTagName("a");
+            //     $urls = array();
+            //     foreach($linkList as $link ) {
+            //         $href = $link->getAttribute('href');
+            //         array_push($urls, $href);
+            //     }
+            //     // echo $bbWrapperHTML;
                 
-                // var_dump($urls);
-                // $filename = $this->argument('filename');
-                // file_put_contents($filename, $bbWrapperHTML);
+            //     // var_dump($urls);
+            //     // $filename = $this->argument('filename');
+            //     // file_put_contents($filename, $bbWrapperHTML);
+            //     if (count($urls) > 0) {
+            //         for($i=0; $i < count($urls);$i++) {
+            //             echo $i . " - Getting content from url: " . $urls[$i];
+            //             $this->call('url:docx', ['url' => $urls[$i], 'filename' => $this->argument('filename')]);
+            //             sleep(5);
+            //         }
+            //     }
+               
+            // } else {
+            //     $this->error("No div with class=\"bbWrapper\" found.");
+            // }
+
+            // Case 2: chapter class use
+            $chapterClass = $xpath->query('//li[@class="chapter-name"]/a/@href');
+            if ($chapterClass) {
+                $urls = array();
+                foreach($chapterClass as $chapter) {
+                    $href = $chapter->nodeValue;
+                    array_push($urls, $href);  
+                }
                 if (count($urls) > 0) {
                     for($i=0; $i < count($urls);$i++) {
                         echo $i . " - Getting content from url: " . $urls[$i];
@@ -89,9 +111,8 @@ class ExtractFromList extends Command
                         sleep(5);
                     }
                 }
-               
             } else {
-                $this->error("No div with class=\"bbWrapper\" found.");
+                $this->error("No chapter link found");
             }
         } catch (\Exception $e) {
             $this->error("Error parsing HTML content: ". $e->getMessage());
