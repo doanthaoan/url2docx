@@ -42,7 +42,15 @@ class Url2Docx extends Command
     {
         // Fetch HTML content from URL
         $url = $this->argument('url');
-        $htmlContent = file_get_contents($url);
+        // $context = stream_context_create(array('http' => array('header'=>'Connection: close\r\n')));
+        // $htmlContent = file_get_contents($url, false, $context);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $htmlContent = curl_exec($ch);
+        // echo $htmlContent;
+        curl_close($ch);
+        // die;
         $FILEPATH = './truyen/';
         // Filter the needed content 
         try {

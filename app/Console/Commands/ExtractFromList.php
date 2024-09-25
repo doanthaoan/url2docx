@@ -105,11 +105,19 @@ class ExtractFromList extends Command
                     array_push($urls, $href);  
                 }
                 if (count($urls) > 0) {
+                    $consumedTime = 0;
                     for($i=0; $i < count($urls);$i++) {
-                        echo $i . " - Getting content from url: " . $urls[$i];
+                        $delayedTime = rand(3,7);
+                        echo $i . " (Delayed: ". $delayedTime ."s)" . " - Getting content from url: " . $urls[$i];
+                        $timeStart = microtime(true);
                         $this->call('url:docx', ['url' => $urls[$i], 'filename' => $this->argument('filename')]);
-                        sleep(5);
+                        $timeEnd = microtime(true);
+                        $executionTime = round(($timeEnd - $timeStart),2); 
+                        $this->info ("(Chapter record:". $executionTime ."s)\r");
+                        $consumedTime = $consumedTime + $delayedTime;
+                        sleep($delayedTime);
                     }
+                    echo "Total time: " . $consumedTime . "s";
                 }
             } else {
                 $this->error("No chapter link found");
