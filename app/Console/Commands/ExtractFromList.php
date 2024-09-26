@@ -54,7 +54,7 @@ class ExtractFromList extends Command
             // Find first div with with class="bbWrapper"
             // TCCT
             // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(4);
-            
+
             // Truyenwikidich
 
             // Case 1: Wrapper use
@@ -80,7 +80,7 @@ class ExtractFromList extends Command
             //         array_push($urls, $href);
             //     }
             //     // echo $bbWrapperHTML;
-                
+
             //     // var_dump($urls);
             //     // $filename = $this->argument('filename');
             //     // file_put_contents($filename, $bbWrapperHTML);
@@ -91,7 +91,7 @@ class ExtractFromList extends Command
             //             sleep(5);
             //         }
             //     }
-               
+
             // } else {
             //     $this->error("No div with class=\"bbWrapper\" found.");
             // }
@@ -100,20 +100,20 @@ class ExtractFromList extends Command
             $chapterClass = $xpath->query('//li[@class="chapter-name"]/a/@href');
             if ($chapterClass) {
                 $urls = array();
-                foreach($chapterClass as $chapter) {
+                foreach ($chapterClass as $chapter) {
                     $href = $chapter->nodeValue;
-                    array_push($urls, $href);  
+                    array_push($urls, $href);
                 }
                 if (count($urls) > 0) {
                     $consumedTime = 0;
-                    for($i=0; $i < count($urls);$i++) {
-                        $delayedTime = rand(3,7);
-                        echo $i . " (Delayed: ". $delayedTime ."s)" . " - Getting content from url: " . $urls[$i];
+                    for ($i = 0; $i < count($urls); $i++) {
+                        $delayedTime = rand(3, 6);
+                        echo $i . " (Delayed: " . $delayedTime . "s)" . " - Getting content from url: " . $urls[$i];
                         $timeStart = microtime(true);
                         $this->call('url:docx', ['url' => $urls[$i], 'filename' => $this->argument('filename')]);
                         $timeEnd = microtime(true);
-                        $executionTime = round(($timeEnd - $timeStart),2); 
-                        $this->info ("(Chapter record:". $executionTime ."s)\r");
+                        $executionTime = round(($timeEnd - $timeStart), 2);
+                        $this->info("(Chapter record:" . $executionTime . "s)\r");
                         $consumedTime = $consumedTime + $delayedTime;
                         sleep($delayedTime);
                     }
@@ -123,8 +123,7 @@ class ExtractFromList extends Command
                 $this->error("No chapter link found");
             }
         } catch (\Exception $e) {
-            $this->error("Error parsing HTML content: ". $e->getMessage());
+            $this->error("Error parsing HTML content: " . $e->getMessage());
         }
-        
     }
 }

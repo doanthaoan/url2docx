@@ -47,6 +47,8 @@ class Url2Docx extends Command
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0');
+
         $htmlContent = curl_exec($ch);
         // echo $htmlContent;
         curl_close($ch);
@@ -65,14 +67,14 @@ class Url2Docx extends Command
             // Find first div with with class="bbWrapper"
             // TCCT
             // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(0);
-            
+
             // Truyenwikidich
             $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@id), " "), " bookContent ")]')->item(0);
 
             if ($bbWrapperElement) {
 
                 $bbWrapperHTML = $doc->saveHTML($bbWrapperElement);
-                
+
                 $tmpDom = new \DOMDocument('1.0', 'UTF-8');
                 $contentType = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
                 $tmpDom->loadHTML($contentType . $bbWrapperHTML);
@@ -100,17 +102,17 @@ class Url2Docx extends Command
                     $xpathToUpdate->query('//div[@class="ankhito center"]')->item(0),
                 ];
 
-                foreach($removeElements as $node) {
+                foreach ($removeElements as $node) {
                     // var_dump($node);
                     $node->parentNode->removeChild($node);
                 }
 
                 // Chapter element update
                 $chapterTitle = $xpathToUpdate->query('//p[@class="book-title"]')->item(0);
-                $newTitle = $tmpDom->createElement('h1',$chapterTitle->textContent);
+                $newTitle = $tmpDom->createElement('h1', $chapterTitle->textContent);
                 // var_dump($newTitle);
                 $chapterTitle->parentNode->replaceChild($newTitle, $chapterTitle);
-                
+
                 // Save final version
                 $filteredHTML = $tmpDom->saveHTML();
                 // Convert HTML content to text
@@ -128,8 +130,8 @@ class Url2Docx extends Command
                 // // Save the document
                 // $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
                 // $objWriter->save($filename);
-                $filename = $this->argument('filename') ? $this->argument('filename').'.html' : 'newfile.html';
-                $file = fopen($FILEPATH.$filename, "a") or die("Unable to open file!");
+                $filename = $this->argument('filename') ? $this->argument('filename') . '.html' : 'newfile.html';
+                $file = fopen($FILEPATH . $filename, "a") or die("Unable to open file!");
                 // $fileContent = file_get_contents($filename);
                 // $fileContent .= $filteredHTML;
                 fwrite($file, $filteredHTML);
@@ -139,8 +141,7 @@ class Url2Docx extends Command
                 $this->error("No div with class=\"bbWrapper\" found.");
             }
         } catch (\Exception $e) {
-            $this->error("Error parsing HTML content: ". $e->getMessage());
+            $this->error("Error parsing HTML content: " . $e->getMessage());
         }
-        
     }
 }
