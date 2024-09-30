@@ -51,6 +51,7 @@ class Url2Docx extends Command
 
         $htmlContent = curl_exec($ch);
         // echo $htmlContent;
+        // die();
         curl_close($ch);
         // die;
         $FILEPATH = './truyen/';
@@ -69,7 +70,8 @@ class Url2Docx extends Command
             // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(0);
 
             // Truyenwikidich
-            $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@id), " "), " bookContent ")]')->item(0);
+            // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@id), " "), " bookContent ")]')->item(0);
+            $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), "chapter-infos")]')->item(0);
 
             if ($bbWrapperElement) {
 
@@ -104,17 +106,39 @@ class Url2Docx extends Command
 
                 foreach ($removeElements as $node) {
                     // var_dump($node);
-                    $node->parentNode->removeChild($node);
+                    if ($node) {
+                        $node->parentNode->removeChild($node);
+                    }
                 }
 
                 // Chapter element update
                 $chapterTitle = $xpathToUpdate->query('//p[@class="book-title"]')->item(0);
-                $newTitle = $tmpDom->createElement('h1', $chapterTitle->textContent);
-                // var_dump($newTitle);
-                $chapterTitle->parentNode->replaceChild($newTitle, $chapterTitle);
+                if ($chapterTitle) {
+                    $newTitle = $tmpDom->createElement('h1', $chapterTitle->textContent);
+                    // var_dump($newTitle);
+                    $chapterTitle->parentNode->replaceChild($newTitle, $chapterTitle);
+                }
 
+                $tmpDom2 = new \DOMDocument('1.0', 'UTF-8');
+                $title = $xpathToUpdate->query('//center')->item(0);
+
+                if ($title) {
+                    $newTitle2 = $tmpDom->saveHTML($title);
+                    // var_dump($title);
+                    // $tmpDom2->appendChild($title);
+                    // var_dump($tmpDom2->saveHTML());
+                }
+                // var_dump($tmpDom);
+                $chapterContent = $xpathToUpdate->query('//div[@id="chapter-content"]')->item(0);
+                if ($chapterContent) {
+                    $newContent = $tmpDom->saveHTML($chapterContent);
+                    // var_dump($chapterContent);
+
+                    // $tmpDom2->appendChild($newContent);
+                }
+                $tmpDom2->loadHTML($contentType . $newTitle2 . $newContent);
                 // Save final version
-                $filteredHTML = $tmpDom->saveHTML();
+                $filteredHTML = $tmpDom2->saveHTML();
                 // Convert HTML content to text
                 // $html2text = new \Html2Text\Html2Text($bbWrapperHTML);
                 // $plainText = $html2text->getText();

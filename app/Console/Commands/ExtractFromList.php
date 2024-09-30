@@ -97,7 +97,10 @@ class ExtractFromList extends Command
             // }
 
             // Case 2: chapter class use
-            $chapterClass = $xpath->query('//li[@class="chapter-name"]/a/@href');
+            // $chapterClass = $xpath->query('//li[@class="chapter-name"]/a/@href');
+            $chapterClass = $xpath->query('//ul[@class="chapter-list"]/li/a/@href');
+            // var_dump($chapterClass);
+            // die;
             if ($chapterClass) {
                 $urls = array();
                 foreach ($chapterClass as $chapter) {
