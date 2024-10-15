@@ -107,7 +107,7 @@ class ExtractFromList extends Command
                 if (count($urls) > 0) {
                     $consumedTime = 0;
                     for ($i = 0; $i < count($urls); $i++) {
-                        $delayedTime = rand(3, 6);
+                        $delayedTime = rand(4, 7);
                         echo $i . " (Delayed: " . $delayedTime . "s)" . " - Getting content from url: " . $urls[$i];
                         $timeStart = microtime(true);
                         $this->call('url:docx', ['url' => $urls[$i], 'filename' => $this->argument('filename')]);
