@@ -48,8 +48,14 @@ class Url2Docx extends Command
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0');
-
+        $token = 'Authorization: Bearer 1250781|k3SRzeQYJLzDre2sEXeDPY0gbsajLB0Ro0UYNICY;';
+        $header = array(
+            'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+            'Cookie: accessToken=1250781|k3SRzeQYJLzDre2sEXeDPY0gbsajLB0Ro0UYNICY; cf_clearance=A_CbG.iZMDT7oBDFEqmN8yJARrLq8MJZPzgiiNvLFVY-1729022263-1.2.1.1-KKjBP9WVQ3X3.r54qv2dtEDqFDGNdAczRn_ftaGu9arZw7NLOvax1JZw9FJ3lk4YYfVLCqVjE5RCC.hvtxC3.Vluqxnr_oDVMGboKFDfO7PoHVpbGeNxUBvuh7YMeckfIs9KyEyrcYj25LxrozGXY982fGexmVYmGGK6N8qZAJvaS2qg4vq0.TEXsZhUuTSZSMH8xQP31g5cc19kcnnhA20H8CrcL3VD7UpoUHzzDCwob72myAPXCD9ZwLgEc5WDxBqLiRwnAQIVZq5zPjE12LWnXQbQY5PY7hWuCaMz5zlaAG4IyCtl5LCXBIp0C0nBdu6PzJfAbnHz8e7v0AB2KOKmJrKGEzeljCuiO4bcre86L5iR99SodqBwPyWowqfs'
+        );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         $htmlContent = curl_exec($ch);
+
         // echo $htmlContent;
         curl_close($ch);
         // die;
@@ -69,7 +75,9 @@ class Url2Docx extends Command
             // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bbWrapper ")]')->item(0);
 
             // Truyenwikidich
-            $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@id), " "), " bookContent ")]')->item(0);
+            // $bbWrapperElement = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " bookContent ")]')->item(0);
+            // 
+            $bbWrapperElement = $xpath->query('//main[contains(concat(" ", normalize-space(@class), " "), "min-h-screen space-y-6 mt-6")]')->item(0);
 
             if ($bbWrapperElement) {
 
@@ -95,20 +103,20 @@ class Url2Docx extends Command
 
                 // Truyenwikidich
                 // Remove Elements
-                $removeElements = [
-                    $xpathToUpdate->query('//p[@class="book-title"]')->item(0),
-                    $xpathToUpdate->query('//p[@class="book-title"]')->item(2),
-                    $xpathToUpdate->query('//div[@class="center ankhinho"]')->item(0),
-                    $xpathToUpdate->query('//div[@class="ankhito center"]')->item(0),
-                ];
+                // $removeElements = [
+                //     $xpathToUpdate->query('//p[@class="flex justify-center space-x-2 items-center px-2"]')->item(0),
+                //     $xpathToUpdate->query('//p[@class="book-title"]')->item(2),
+                //     $xpathToUpdate->query('//div[@class="center ankhinho"]')->item(0),
+                //     $xpathToUpdate->query('//div[@class="ankhito center"]')->item(0),
+                // ];
 
-                foreach ($removeElements as $node) {
-                    // var_dump($node);
-                    $node->parentNode->removeChild($node);
-                }
+                // foreach ($removeElements as $node) {
+                //     // var_dump($node);
+                //     $node->parentNode->removeChild($node);
+                // }
 
                 // Chapter element update
-                $chapterTitle = $xpathToUpdate->query('//p[@class="book-title"]')->item(0);
+                $chapterTitle = $xpathToUpdate->query('//h2[@class="text-center text-gray-600 dark:text-gray-400 text-balance"]')->item(0);
                 $newTitle = $tmpDom->createElement('h1', $chapterTitle->textContent);
                 // var_dump($newTitle);
                 $chapterTitle->parentNode->replaceChild($newTitle, $chapterTitle);
